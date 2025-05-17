@@ -13,9 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Bot, LayoutDashboard, Key, Settings, Bell, Menu, X, LogOut, HelpCircle } from "lucide-react"
 import { useState } from "react"
+import { useUser, useClerk } from "@clerk/nextjs"
 
 export default function DashboardNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { isSignedIn, user } = useUser();
+  const { signOut } = useClerk();
 
   return (
     <header className="border-b border-green-900/40 bg-black">
@@ -73,7 +76,7 @@ export default function DashboardNav() {
               <DropdownMenuContent className="w-56 bg-gray-900 border-green-900/40 text-white" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">usuario@ejemplo.com</p>
+                    <p className="text-sm font-medium">{user?.primaryEmailAddress?.emailAddress}</p>
                     <p className="text-xs text-gray-400">Plan Pro</p>
                   </div>
                 </DropdownMenuLabel>
@@ -86,11 +89,18 @@ export default function DashboardNav() {
                   <HelpCircle className="mr-2 h-4 w-4" />
                   <span>Soporte</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-green-900/40" />
-                <DropdownMenuItem className="hover:bg-green-900/20 hover:text-red-500 cursor-pointer">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Cerrar sesión</span>
-                </DropdownMenuItem>
+                {isSignedIn && (
+                  <>
+                    <DropdownMenuSeparator className="bg-green-900/40" />
+                    <DropdownMenuItem
+                      className="hover:bg-green-900/20 hover:text-red-500 cursor-pointer"
+                      onClick={() => signOut()}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Cerrar sesión</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

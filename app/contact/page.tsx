@@ -1,12 +1,11 @@
 'use client';
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Bot } from 'lucide-react';
+import { Bot, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ContactPage() {
@@ -16,6 +15,7 @@ export default function ContactPage() {
     subject: '',
     message: '',
   });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
 
@@ -58,12 +58,63 @@ export default function ContactPage() {
     <div className="flex flex-col min-h-screen bg-black text-white">
       {/* Header */}
       <header className="border-b border-green-900/40 py-4 px-6">
-        <div className="container mx-auto flex justify-between items-center">
+        <div className="container mx-auto flex items-center">
           <Link href="/" className="flex items-center gap-2">
             <Bot className="h-8 w-8 text-green-500" />
             <span className="text-2xl font-bold tracking-tight">BotMM</span>
           </Link>
+          <div className="flex-grow flex justify-center">
+            <nav className="hidden md:flex items-center justify-center gap-6">
+              <Link href="/about" className="text-sm font-medium hover:text-green-500 transition">
+                Sobre Nosotros
+              </Link>
+              <Link href="/pricing" className="text-sm font-medium hover:text-green-500 transition">
+                Precios
+              </Link>
+              <Link href="/docs" className="text-sm font-medium hover:text-green-500 transition">
+                Documentación
+              </Link>
+              <Link href="/blog" className="text-sm font-medium hover:text-green-500 transition">
+                Blog
+              </Link>
+              <Link href="/contact" className="text-sm font-medium hover:text-green-500 transition">
+                Contacto
+              </Link>
+            </nav>
+          </div>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-400 hover:text-green-500 hover:bg-green-900/10 md:hidden"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
         </div>
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-green-900/40 bg-gray-900">
+            <nav className="flex flex-col py-4 px-6">
+              <Link href="/about" className="flex items-center gap-2 py-3 text-gray-400 hover:text-green-500">
+                Sobre Nosotros
+              </Link>
+              <Link href="/pricing" className="flex items-center gap-2 py-3 text-gray-400 hover:text-green-500">
+                Precios
+              </Link>
+              <Link href="/docs" className="flex items-center gap-2 py-3 text-gray-400 hover:text-green-500">
+                Documentación
+              </Link>
+              <Link href="/blog" className="flex items-center gap-2 py-3 text-gray-400 hover:text-green-500">
+                Blog
+              </Link>
+              <Link href="/contact" className="flex items-center gap-2 py-3 text-gray-400 hover:text-green-500">
+                Contacto
+              </Link>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* Contact Section */}

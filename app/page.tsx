@@ -1,8 +1,22 @@
+"use client";
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Bot, Key, Shield, Zap } from "lucide-react"
+import { ArrowRight, Bot, Key, Shield, Zap, Menu, X, ChevronDown } from "lucide-react"
+import { useUser, useClerk } from "@clerk/nextjs"
+import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function Home() {
+  const { isSignedIn } = useUser();
+  const { signOut } = useClerk();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [botsMenuOpen, setBotsMenuOpen] = useState(false);
+
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
       {/* Header */}
@@ -12,31 +26,127 @@ export default function Home() {
             <Bot className="h-8 w-8 text-green-500" />
             <span className="text-2xl font-bold tracking-tight">BotMM</span>
           </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/dashboard" className="text-gray-400 hover:text-green-500 transition">
-              Panel
+          <nav className="hidden md:flex items-center gap-6 relative">
+            {isSignedIn && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="text-gray-400 hover:text-green-500 transition flex items-center gap-1"
+                  aria-haspopup="true"
+                >
+                  Tus Bots <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48 bg-gray-900 border border-green-900/40 rounded-md shadow-lg text-gray-400" align="start">
+                <Link href="/dashboard">
+                  <DropdownMenuItem className="hover:bg-green-900/20 hover:text-green-500 cursor-pointer">
+                    Panel
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/bots">
+                  <DropdownMenuItem className="hover:bg-green-900/20 hover:text-green-500 cursor-pointer">
+                    Bots
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/api-keys">
+                  <DropdownMenuItem className="hover:bg-green-900/20 hover:hover:text-green-500 cursor-pointer">
+                    Claves API
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            )}
+            <Link href="/about" className="text-gray-400 hover:text-green-500 transition">
+              Sobre Nosotros
             </Link>
-            <Link href="/bots" className="text-gray-400 hover:text-green-500 transition">
-              Bots
-            </Link>
-            <Link href="/api-keys" className="text-gray-400 hover:text-green-500 transition">
-              Claves API
+            <Link href="/pricing" className="text-gray-400 hover:text-green-500 transition">
+              Precios
             </Link>
             <Link href="/docs" className="text-gray-400 hover:text-green-500 transition">
               Documentación
             </Link>
+            <Link href="/blog" className="text-gray-400 hover:text-green-500 transition">
+              Blog
+            </Link>
+            <Link href="/contact" className="text-gray-400 hover:text-green-500 transition">
+              Contacto
+            </Link>
           </nav>
           <div className="flex items-center gap-4">
-            <Link href="/sign-in">
-              <Button variant="outline" className="border-green-700 text-green-500 hover:bg-green-900/20">
-                Iniciar sesión
+            {!isSignedIn && (
+              <>
+                <Link href="/sign-in">
+                  <Button variant="outline" className="border-green-700 text-green-500 hover:bg-green-900/20 text-sm px-3 py-2 md:text-base md:px-4 md:py-2">
+                    Iniciar sesión
+                  </Button>
+                </Link>
+              </>
+            )}
+            {isSignedIn && (
+              <Button
+                variant="outline"
+                className="border-green-700 text-green-500 hover:bg-green-900/20"
+                onClick={() => signOut()}
+              >
+                Cerrar sesión
               </Button>
-            </Link>
-            <Link href="/sign-up">
-              <Button className="bg-green-600 hover:bg-green-700 text-black font-medium">Registrarse</Button>
-            </Link>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-400 hover:text-green-500 hover:bg-green-900/10 md:hidden"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
           </div>
         </div>
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-green-900/40 bg-gray-900">
+            <nav className="flex flex-col py-4 px-6">
+              {isSignedIn && (
+              <div className="flex flex-col">
+                <button
+                  className="flex items-center justify-between w-full py-3 text-gray-400 hover:text-green-500"
+                  onClick={() => setBotsMenuOpen(!botsMenuOpen)}
+                  aria-expanded={botsMenuOpen}
+                >
+                  Tus Bots <ChevronDown className={`h-5 w-5 transition-transform ${botsMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {botsMenuOpen && (
+                  <div className="flex flex-col pl-4 border-l border-green-900/40 ml-2">
+                    <Link href="/dashboard" className="flex items-center gap-2 py-2 text-gray-400 hover:text-green-500">
+                      Panel
+                    </Link>
+                    <Link href="/bots" className="flex items-center gap-2 py-2 text-gray-400 hover:text-green-500">
+                      Bots
+                    </Link>
+                    <Link href="/api-keys" className="flex items-center gap-2 py-2 text-gray-400 hover:text-green-500">
+                      Claves API
+                    </Link>
+                  </div>
+                )}
+              </div>
+              )}
+              <Link href="/about" className="flex items-center gap-2 py-3 text-gray-400 hover:text-green-500">
+                Sobre Nosotros
+              </Link>
+              <Link href="/pricing" className="flex items-center gap-2 py-3 text-gray-400 hover:text-green-500">
+                Precios
+              </Link>
+              <Link href="/docs" className="flex items-center gap-2 py-3 text-gray-400 hover:text-green-500">
+                Documentación
+              </Link>
+              <Link href="/blog" className="flex items-center gap-2 py-3 text-gray-400 hover:text-green-500">
+                Blog
+              </Link>
+              <Link href="/contact" className="flex items-center gap-2 py-3 text-gray-400 hover:text-green-500">
+                Contacto
+              </Link>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* Hero Section */}
